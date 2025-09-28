@@ -1,0 +1,116 @@
+public static async Task<string> GetHtml()
+{
+    string html = await CallUrl(_url);
+
+    // "inputTags" are how we get the full url to each booster pack. E.g.
+    // <input type="hidden" class="link_value"
+    // value="/yugiohdb/card_search.action?ope=1&sess=1&pid=2000001497000&rp=99999">
+    List<string> inputTags = GetBoosterPackInputTags(html);
+
+    int pbTracker = 0;
+    int boosterPackAppearanceCounter = 0;
+
+    _mainFormProgressBar.Maximum = inputTags.Count;
+
+    if (inputTags != null)
+    {
+        if (inputTags.Count != 0)
+        {
+            // The name of the booster pack we are working with can be found in the element which has a class attr of "broad_title"
+            string packNameElementClass = "broad_title";
+
+            // Iterate through all known booster pack <input> tags
+            foreach (string line in inputTags)
+            {
+                pbTracker += 1;
+                _mainFormProgressBar.Value = pbTracker;
+
+                string fullPackLink = _baseUrl;
+                fullPackLink += line.Substring(48, line.Length - 50);
+
+                // Get the HTML for the booster pack webpage
+                string packHtml = await CallUrl(fullPackLink);
+
+                // Create Html Document based on the booster pack url
+                HtmlAgilityPack.HtmlDocument packHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+                packHtmlDoc.LoadHtml(packHtml);
+
+                // Get the title of the booster pack from the HTML <title> tag
+                var pageTitleContainer = packHtmlDoc.DocumentNode.SelectSingleNode("//title");
+                string completePageTitle = pageTitleContainer.InnerHtml;
+                string packName = completePageTitle.Split('|')[0].Replace(" ", "");
+
+                // Increment by 1 (this is for booster packs that have had multiple releases.
+                // This is mostly for Shonen Jump Promo packs, as far as I can tell.
+                boosterPackAppearanceCounter++;
+
+                // Append the booster pack counter ONLY when we already have that booster
+                // pack as a key in the KVP. This way we at least include the booster pack
+                // and it's cards in the application.
+                if (_boosterPackWebPageUrlDict.ContainsKey(packName))
+                    packName += "_" + boosterPackAppearanceCounter;
+
+                // Add the current booster pack name and that packs web page to
+                // our KeyValuePair (Dictionary(string, string).
+                _boosterPackWebPageUrlDict.Add(packName, fullPackLink);
+
+                _boosterPackNames.Add(packName);
+
+                #region Class text values for the information we need to retrieve from HTML elements
+
+
+                // The class name or whatever that is used to located the mark up where the card information is
+                string cardIdentifier = "";
+
+                // Each card in the booster pack is set in it's own div (that contains multiple child nodes for each
+                // part of the displayed information. Below is the class name of the container (div element) that
+                // houses ALL of the cards details.
+                string cardContainerClassName = "t_row c_normal";
+
+                // The image displayed on the page is contained in the container detailed below
+                string cardImageContainerClassName = "box_card_img";
+
+                // flex_1 is a html list tag that contains multiple child nodes i.e. <dl> followed by multiple <dd> tags
+                // each of which contains card data
+                string cardInfoParentContainer = "flex_1";
+
+                // The above has 1+ child nodes (<dd> tags) that each contain a piece of the displayed information.
+                // The name of the card is contained in dd with class="box_card_name flex_1 top_set" which itself has
+                // two child <span> nodes. We want the <span> with class="card_name"
+                string cardNameContainer = "card_name";
+
+                #endregion
+
+                // Get all html nodes that have a classa that = "t_row c_normal". Each one of these elements contains all the data
+                // needed for the card related to it
+                // Each of the items in the collection "cardsInBoosterPack" is an individual card
+                var cardsInBoosterPack = packHtmlDoc.DocumentNode.Descendants("div")
+                    .Where(node => node.GetAttributeValue("class", "").Contains(cardContainerClassName))
+                    .ToList();
+
+                // Each of the items in "cardsInBoosterPack" have an input tag
+                // near the end of its HTML that contains the name of the card.
+                // These input tags use class="cnm". Use this to get the card name
+                var cardTitleClassName = "cnm";
+
+                // Here we just get the innerhtml. In here, there is an <input>
+                // tag that has a class name of "cnm" (class="cnm") that contains
+                // the card name.
+                // e.g. <input type="hidden" class="cnm" value='Zubababa Knight'>
+                var cardsHtmlList = cardsInBoosterPack
+                                    .Select(node => node.InnerHtml)
+                                    .ToList();
+
+                    _boosterPackWithCardNamesDictionary.Add(packName, cardsHtmlList);
+
+                //var cardName = cardsInBoosterPack.Where(i => i.GetAttributeValue("class", "").Contains("cnm")).ToList();
+            }
+
+            // Assign the Name/Url KVP to the MainForms KVP
+            _mainForm._boosterPackNameUrlDict = _boosterPackWebPageUrlDict;
+            _mainForm._boosterPackNameWithCards = _boosterPackWithCardNamesDictionary;
+        }                
+    }
+
+    return "";
+}

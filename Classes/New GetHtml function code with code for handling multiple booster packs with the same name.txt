@@ -1,0 +1,69 @@
+public static async Task<string> GetHtml()
+{
+    string html = await CallUrl(_url);
+
+    List<string> inputTags = GetBoosterPackInputTags(html);
+    Dictionary<string, int> packNameTracker = new Dictionary<string, int>();
+    int pbTracker = 0;
+
+    _mainFormProgressBar.Maximum = inputTags?.Count ?? 0;
+
+    if (inputTags != null && inputTags.Count > 0)
+    {
+        string packNameElementClass = "broad_title";
+
+        foreach (string line in inputTags)
+        {
+            pbTracker++;
+            _mainFormProgressBar.Value = pbTracker;
+
+            string fullPackLink = _baseUrl + line.Substring(48, line.Length - 50);
+            string packHtml = await CallUrl(fullPackLink);
+
+            var packHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            packHtmlDoc.LoadHtml(packHtml);
+
+            var pageTitleContainer = packHtmlDoc.DocumentNode.SelectSingleNode("//title");
+            string completePageTitle = pageTitleContainer?.InnerHtml ?? "UnknownPack";
+            string rawPackName = completePageTitle.Split('|')[0].Trim();
+            string packName = rawPackName.Replace(" ", "");
+
+            // Track appearances of each pack name
+            if (packNameTracker.ContainsKey(packName))
+            {
+                packNameTracker[packName]++;
+                packName += "_" + packNameTracker[packName];
+            }
+            else
+            {
+                packNameTracker[packName] = 1;
+            }
+
+            _boosterPackWebPageUrlDict[packName] = fullPackLink;
+            _boosterPackNames.Add(packName);
+
+            #region Class text values for the information we need to retrieve from HTML elements
+            string cardContainerClassName = "t_row c_normal";
+            string cardImageContainerClassName = "box_card_img";
+            string cardInfoParentContainer = "flex_1";
+            string cardNameContainer = "card_name";
+            string cardTitleClassName = "cnm";
+            #endregion
+
+            var cardsInBoosterPack = packHtmlDoc.DocumentNode.Descendants("div")
+                .Where(node => node.GetAttributeValue("class", "").Contains(cardContainerClassName))
+                .ToList();
+
+            var cardsHtmlList = cardsInBoosterPack
+                .Select(node => node.InnerHtml)
+                .ToList();
+
+            _boosterPackWithCardNamesDictionary.Add(packName, cardsHtmlList);
+        }
+
+        _mainForm._boosterPackNameUrlDict = _boosterPackWebPageUrlDict;
+        _mainForm._boosterPackNameWithCards = _boosterPackWithCardNamesDictionary;
+    }
+
+    return "";
+}

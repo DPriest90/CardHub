@@ -1,0 +1,52 @@
+Folder PATH listing for volume Windows
+Volume serial number is 8ADD-270B
+C:\USERS\STARK\SOURCE\REPOS\CARDHUB
+|   App.config
+|   CardHub.csproj
+|   CardHub.sln
+|   folder_structure.txt
+|   Program.cs
+|   
++---bin
+|   +---Debug
+|   |       CardHub.exe
+|   |       CardHub.exe.config
+|   |       CardHub.pdb
+|   |       
+|   \---Release
++---Classes
+|   |   BoosterPack.cs
+|   |   Card.cs
+|   |   CardRepository.cs
+|   |   HtmlWorker.cs
+|   |   
+|   \---Models
++---Forms
+|       MainHub.cs
+|       MainHub.Designer.cs
+|       MainHub.resx
+|       
++---obj
+|   \---Debug
+|       |   .NETFramework,Version=v4.8.AssemblyAttributes.cs
+|       |   CardHub.csproj.AssemblyReference.cache
+|       |   CardHub.csproj.CoreCompileInputs.cache
+|       |   CardHub.csproj.FileListAbsolute.txt
+|       |   CardHub.csproj.GenerateResource.cache
+|       |   CardHub.exe
+|       |   CardHub.exe.config
+|       |   CardHub.Forms.formMainHub.resources
+|       |   CardHub.pdb
+|       |   CardHub.Properties.Resources.resources
+|       |   DesignTimeResolveAssemblyReferences.cache
+|       |   DesignTimeResolveAssemblyReferencesInput.cache
+|       |   
+|       \---TempPE
++---Properties
+|       AssemblyInfo.cs
+|       Resources.Designer.cs
+|       Resources.resx
+|       Settings.Designer.cs
+|       Settings.settings
+|       
+\---Utilities
