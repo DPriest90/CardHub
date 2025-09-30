@@ -92,14 +92,9 @@ namespace CardHub.Forms
                 _boosterPackNameUrlDict = LoadPackUrlDictionaryFromJson(jsonFileName);
 
                 toolStripStatusLabel1.Text = "Ready...";
-
                 boosterPackSelect.Enabled = true;
-
-                // Read the JSON file that contains data for what cards are in each booster pack
-                // (for the Data Grid View control)
-                //_gridData = File.ReadAllText(_gridDataFileName);
             }
-            else // This is the first time running
+            else
             {
                 // Get HTML - This function gets and parses the HTML. It also populates certain 
                 // variables used in
@@ -132,54 +127,43 @@ namespace CardHub.Forms
         }
 
         /// <summary>
-        /// Sets the selected booster pack when the user changes the selection in the
-        /// booster pack dropdown. Also populates data grid view control with cards
-        /// belonging to selected booster pack.
+        /// When the user selects a booster pack - populate the Advanced Data Grid View control with the cards
+        /// that are in that booster pack set.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void boosterPackSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            // Check if item IS a string and also check the value is not null or just whitespace
             if (boosterPackSelect.SelectedItem is string selectedPack && !string.IsNullOrWhiteSpace(selectedPack))
             {
+                // Set property value
                 SelectedBoosterPack = selectedPack;
 
+                // Obviously check if file exists, can't use if not not there,,, duhhh
                 if (File.Exists(_gridDataFileName))
                 {
+                    // Read JSON into memory
                     string json = File.ReadAllText(_gridDataFileName);
-
+                    
+                    // Load the JSON data into a Dictionary<string, List<T>> object by deserializing it
                     var boosterData = JsonConvert.DeserializeObject<Dictionary<string, List<Card>>>(json);
 
+                    // Make sure we actually have data and then output a List<T> to use
                     if (boosterData != null && boosterData.TryGetValue(selectedPack, out var cardList))
                     {
+                        // BindingSource to populate GridView with
                         var bindingSource = new BindingSource();
                        
+                        // We need to convert the List<T> to a DataTable. We do this so that the built in
+                        // Sorting and filtering functionality of the Grid View can actually be used.
+                        // List<T> is NOT capable of being sorted by the Grid, DataTable IS.
                         var table = ToDataTable(cardList);
                         bindingSource.DataSource = table;
                         advancedDataGridView1.DataSource = bindingSource;
                     }
                 }
             }
-
-            //// Set the selected booster pack based on the user's selection in the dropdown.
-            //if (boosterPackSelect.SelectedItem != null &&
-            //    !string.IsNullOrEmpty(boosterPackSelect.SelectedItem.ToString()))
-            //{
-            //    SelectedBoosterPack = boosterPackSelect.SelectedItem.ToString();
-
-            //    string json = File.ReadAllText(_gridDataFileName);
-
-            //    // Deserialize into a dictionary of booster packs
-            //    var boosterData = JsonConvert.DeserializeObject<Dictionary<string, List<Card>>>(json);
-            //    string selectedPack = boosterPackSelect.SelectedItem?.ToString();
-
-            //    // Access a specific pack
-            //    List<Card> doomPackCards = boosterData[selectedPack];
-
-            //    advancedDataGridView1.DataSource = doomPackCards;
-            //}
-
         }
 
         /// <summary>
@@ -195,7 +179,7 @@ namespace CardHub.Forms
             {
                 this.Invoke(new Action(() => toolStripStatusLabel1.Text = newText));
             }
-            else // Already on UI thread—safe to update directly
+            else // Already on UI thread — Safe to update directly
             {
                 toolStripStatusLabel1.Text = newText;
             }            
@@ -222,14 +206,21 @@ namespace CardHub.Forms
         /// <returns></returns>
         public DataTable ToDataTable<T>(List<T> items)
         {
+            // Create a new DataTable object, giving the table a name of the "Card"
+            // With "Card" being the name of the object used (typeof(T).Name)
+            // Then we get the names of each property in the used object
             var dataTable = new DataTable(typeof(T).Name);
             var props = typeof(T).GetProperties();
 
+            // Iterate through Card.cs properties and add a new column to the DataTable object
+            // using the property name as the column header
             foreach (var prop in props)
             {
                 dataTable.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
             }
 
+            // Iterate through List<T> provided as the function call argument
+            // then add each one as a new row to the DataTable object.
             foreach (var item in items)
             {
                 var values = props.Select(p => p.GetValue(item, null)).ToArray();
@@ -239,6 +230,16 @@ namespace CardHub.Forms
             return dataTable;
         }
 
-
+        private void exitApplicationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _selectedBoosterPack = null;
+            _gridDataFileName = null;
+            _gridData = null;
+            _boosterPackNameUrlDict = null;
+            _boosterPackNameWithCards = null;
+            SelectedBoosterPack = null;
+            UpdatedProgressBarValue = 0;
+            Application.Exit();
+        }
     }
 }

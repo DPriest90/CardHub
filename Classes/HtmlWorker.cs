@@ -42,7 +42,7 @@ namespace CardHub.Classes
         private static Dictionary<string, string> _boosterPackWebPageUrlDict = new Dictionary<string, string>();
 
         private static string _boosterPackCardDataJsonFile = ConfigurationManager.AppSettings["BoosterPackCardDataJsonFile"];
-
+        private static readonly HttpClient _client = new HttpClient();
         /// <summary>
         /// Each KVP will have the name of the booster pack as the key and List<Card> as the value, so we will have data for every card in that booster pack.
         /// </summary>
@@ -57,6 +57,12 @@ namespace CardHub.Classes
         private static string _imageUrlListFileName = "Data/image_urls.csv";
 
         #endregion
+
+        static HtmlWorker()
+        {
+            _client.DefaultRequestHeaders.UserAgent.ParseAdd("CardHub/1.0");
+        }
+
 
         /// <summary>
         /// Retrieves and processes HTML content from a predefined URL, extracting booster pack information and
@@ -163,7 +169,9 @@ namespace CardHub.Classes
         }
 
         /// <summary>
-        /// Populate Card POCO with data from HTML
+        /// Populate Card POCO with data from HTML.Data like Name of the card, level, attribute,
+        /// attack and defence. 
+        /// 
         /// </summary>
         /// <param name="cardsHtmlList"></param>
         /// <returns></returns>
@@ -261,23 +269,34 @@ namespace CardHub.Classes
         {
             try
             {
-                // Create an HttpClient object to retrieve the HTML of given URL
-                using (HttpClient client = new HttpClient())
-                {
-                    //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
-                    client.DefaultRequestHeaders.Accept.Clear();
-
-                    // Get the contents of our pages <body> tag
-                    var response = client.GetStringAsync(fullUrl);
-
-                    // return the data
-                    return await response;
-                }
+                _client.DefaultRequestHeaders.Accept.Clear();
+                var response = await _client.GetStringAsync(fullUrl);
+                return response;
             }
             catch (Exception ex)
             {
                 return ex.Message;
             }
+
+            //try
+            //{
+            //    // Create an HttpClient object to retrieve the HTML of given URL
+            //    using (HttpClient client = new HttpClient())
+            //    {
+            //        //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
+            //        client.DefaultRequestHeaders.Accept.Clear();
+
+            //        // Get the contents of our pages <body> tag
+            //        var response = client.GetStringAsync(fullUrl);
+
+            //        // return the data
+            //        return await response;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return ex.Message;
+            //}
 
         }
 
