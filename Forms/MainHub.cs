@@ -18,9 +18,14 @@ namespace CardHub.Forms
 {
     public partial class formMainHub : Form
     {
+        #region form properties
+
         private string _selectedBoosterPack = string.Empty;
         private string _gridDataFileName = string.Empty;
+        private string _gridData = string.Empty;
+
         private int _updatedProgressBarValue = 0;
+
         public Dictionary<string, string> _boosterPackNameUrlDict;
         public Dictionary<string, List<string>> _boosterPackNameWithCards;
 
@@ -39,6 +44,8 @@ namespace CardHub.Forms
             set { _updatedProgressBarValue = value; }
 
         }
+
+        #endregion
 
         public formMainHub()
         {
@@ -84,10 +91,13 @@ namespace CardHub.Forms
                 string jsonFileName = ConfigurationManager.AppSettings["BoosterPackNameUrlData"];                
                 _boosterPackNameUrlDict = LoadPackUrlDictionaryFromJson(jsonFileName);
 
-
                 toolStripStatusLabel1.Text = "Ready...";
 
                 boosterPackSelect.Enabled = true;
+
+                // Read the JSON file that contains data for what cards are in each booster pack
+                // (for the Data Grid View control)
+                //_gridData = File.ReadAllText(_gridDataFileName);
             }
             else // This is the first time running
             {
@@ -117,61 +127,59 @@ namespace CardHub.Forms
 
                 boosterPackSelect.Enabled = true;
             }
+
+           
         }
 
         /// <summary>
         /// Sets the selected booster pack when the user changes the selection in the
-        /// booster pack dropdown.
+        /// booster pack dropdown. Also populates data grid view control with cards
+        /// belonging to selected booster pack.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void boosterPackSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Set the selected booster pack based on the user's selection in the dropdown.
-            if (boosterPackSelect.SelectedItem != null &&
-                !string.IsNullOrEmpty(boosterPackSelect.SelectedItem.ToString()))
+
+            if (boosterPackSelect.SelectedItem is string selectedPack && !string.IsNullOrWhiteSpace(selectedPack))
             {
-                SelectedBoosterPack = boosterPackSelect.SelectedItem.ToString();
-                viewPackBtn.Enabled = true;
+                SelectedBoosterPack = selectedPack;
+
+                if (File.Exists(_gridDataFileName))
+                {
+                    string json = File.ReadAllText(_gridDataFileName);
+
+                    var boosterData = JsonConvert.DeserializeObject<Dictionary<string, List<Card>>>(json);
+
+                    if (boosterData != null && boosterData.TryGetValue(selectedPack, out var cardList))
+                    {
+                        var bindingSource = new BindingSource();
+                       
+                        var table = ToDataTable(cardList);
+                        bindingSource.DataSource = table;
+                        advancedDataGridView1.DataSource = bindingSource;
+                    }
+                }
             }
 
-            //if (!string.IsNullOrEmpty(boosterPackSelect.SelectedItem.ToString()))
+            //// Set the selected booster pack based on the user's selection in the dropdown.
+            //if (boosterPackSelect.SelectedItem != null &&
+            //    !string.IsNullOrEmpty(boosterPackSelect.SelectedItem.ToString()))
             //{
             //    SelectedBoosterPack = boosterPackSelect.SelectedItem.ToString();
-            //    viewPackBtn.Enabled = true;
+
+            //    string json = File.ReadAllText(_gridDataFileName);
+
+            //    // Deserialize into a dictionary of booster packs
+            //    var boosterData = JsonConvert.DeserializeObject<Dictionary<string, List<Card>>>(json);
+            //    string selectedPack = boosterPackSelect.SelectedItem?.ToString();
+
+            //    // Access a specific pack
+            //    List<Card> doomPackCards = boosterData[selectedPack];
+
+            //    advancedDataGridView1.DataSource = doomPackCards;
             //}
-        }
 
-        /// <summary>
-        /// Upon user selecting a booster pack to view, we will open the respective
-        /// web page on the "www.db.yugioh-card.com" website.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void viewPackBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // Read the file
-                string json = File.ReadAllText(_gridDataFileName);
-
-                // Deserialize into a dictionary of booster packs
-                var boosterData = JsonConvert.DeserializeObject<Dictionary<string, List<Card>>>(json);
-                string selectedPack = boosterPackSelect.SelectedItem?.ToString();
-
-                // Access a specific pack
-                List<Card> doomPackCards = boosterData[selectedPack];
-
-                advancedDataGridView1.DataSource = doomPackCards;
-            }
-            catch (System.UriFormatException uriEx)
-            {
-                MessageBox.Show("The URL format is invalid. Please check the booster pack configuration.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message, "Unexpected exception encountered", MessageBoxButtons.OK, MessageBoxIcon.Stop);                
-            }
         }
 
         /// <summary>
@@ -203,6 +211,34 @@ namespace CardHub.Forms
             string json = File.ReadAllText(filePath);
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
         }
+
+        /// <summary>
+        /// To enable DGV records to be sorted, we convert our List<T> to a
+        /// DataTable object and use the DataTable as DataSource for the Grid
+        /// DataBinding source. DataGridView cannot sort List<T> objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public DataTable ToDataTable<T>(List<T> items)
+        {
+            var dataTable = new DataTable(typeof(T).Name);
+            var props = typeof(T).GetProperties();
+
+            foreach (var prop in props)
+            {
+                dataTable.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            }
+
+            foreach (var item in items)
+            {
+                var values = props.Select(p => p.GetValue(item, null)).ToArray();
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
+        }
+
 
     }
 }

@@ -32,29 +32,28 @@
             this.packSelectGroupBox = new System.Windows.Forms.GroupBox();
             this.advancedDgvPanel = new System.Windows.Forms.Panel();
             this.advancedDataGridView1 = new Zuby.ADGV.AdvancedDataGridView();
-            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.attributeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.linkDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.rankDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.levelDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.attackDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.defenseDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.typeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cardTextDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cardBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.viewPackBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.boosterPackSelect = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.levelDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.attributeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.attackDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.defenseDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.typeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cardTextDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.linkDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.rankDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cardBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.cardBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.packSelectGroupBox.SuspendLayout();
             this.advancedDgvPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.advancedDataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // packSelectGroupBox
@@ -63,7 +62,6 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.packSelectGroupBox.Controls.Add(this.advancedDgvPanel);
-            this.packSelectGroupBox.Controls.Add(this.viewPackBtn);
             this.packSelectGroupBox.Controls.Add(this.label1);
             this.packSelectGroupBox.Controls.Add(this.boosterPackSelect);
             this.packSelectGroupBox.Location = new System.Drawing.Point(46, 25);
@@ -88,19 +86,20 @@
             // 
             // advancedDataGridView1
             // 
+            this.advancedDataGridView1.AllowUserToOrderColumns = true;
             this.advancedDataGridView1.AutoGenerateColumns = false;
             this.advancedDataGridView1.BackgroundColor = System.Drawing.Color.Gold;
             this.advancedDataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.advancedDataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nameDataGridViewTextBoxColumn,
-            this.attributeDataGridViewTextBoxColumn,
-            this.linkDataGridViewTextBoxColumn,
-            this.rankDataGridViewTextBoxColumn,
             this.levelDataGridViewTextBoxColumn,
+            this.attributeDataGridViewTextBoxColumn,
             this.attackDataGridViewTextBoxColumn,
             this.defenseDataGridViewTextBoxColumn,
             this.typeDataGridViewTextBoxColumn,
-            this.cardTextDataGridViewTextBoxColumn});
+            this.cardTextDataGridViewTextBoxColumn,
+            this.linkDataGridViewTextBoxColumn,
+            this.rankDataGridViewTextBoxColumn});
             this.advancedDataGridView1.DataSource = this.cardBindingSource1;
             this.advancedDataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.advancedDataGridView1.FilterAndSortEnabled = true;
@@ -115,102 +114,6 @@
             this.advancedDataGridView1.Size = new System.Drawing.Size(989, 352);
             this.advancedDataGridView1.SortStringChangedInvokeBeforeDatasourceUpdate = true;
             this.advancedDataGridView1.TabIndex = 0;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            this.nameDataGridViewTextBoxColumn.HeaderText = "Name";
-            this.nameDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            this.nameDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.nameDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // attributeDataGridViewTextBoxColumn
-            // 
-            this.attributeDataGridViewTextBoxColumn.DataPropertyName = "Attribute";
-            this.attributeDataGridViewTextBoxColumn.HeaderText = "Attribute";
-            this.attributeDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.attributeDataGridViewTextBoxColumn.Name = "attributeDataGridViewTextBoxColumn";
-            this.attributeDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.attributeDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // linkDataGridViewTextBoxColumn
-            // 
-            this.linkDataGridViewTextBoxColumn.DataPropertyName = "Link";
-            this.linkDataGridViewTextBoxColumn.HeaderText = "Link";
-            this.linkDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.linkDataGridViewTextBoxColumn.Name = "linkDataGridViewTextBoxColumn";
-            this.linkDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.linkDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // rankDataGridViewTextBoxColumn
-            // 
-            this.rankDataGridViewTextBoxColumn.DataPropertyName = "Rank";
-            this.rankDataGridViewTextBoxColumn.HeaderText = "Rank";
-            this.rankDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.rankDataGridViewTextBoxColumn.Name = "rankDataGridViewTextBoxColumn";
-            this.rankDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.rankDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // levelDataGridViewTextBoxColumn
-            // 
-            this.levelDataGridViewTextBoxColumn.DataPropertyName = "Level";
-            this.levelDataGridViewTextBoxColumn.HeaderText = "Level";
-            this.levelDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.levelDataGridViewTextBoxColumn.Name = "levelDataGridViewTextBoxColumn";
-            this.levelDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.levelDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // attackDataGridViewTextBoxColumn
-            // 
-            this.attackDataGridViewTextBoxColumn.DataPropertyName = "Attack";
-            this.attackDataGridViewTextBoxColumn.HeaderText = "Attack";
-            this.attackDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.attackDataGridViewTextBoxColumn.Name = "attackDataGridViewTextBoxColumn";
-            this.attackDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.attackDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // defenseDataGridViewTextBoxColumn
-            // 
-            this.defenseDataGridViewTextBoxColumn.DataPropertyName = "Defense";
-            this.defenseDataGridViewTextBoxColumn.HeaderText = "Defense";
-            this.defenseDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.defenseDataGridViewTextBoxColumn.Name = "defenseDataGridViewTextBoxColumn";
-            this.defenseDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.defenseDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // typeDataGridViewTextBoxColumn
-            // 
-            this.typeDataGridViewTextBoxColumn.DataPropertyName = "Type";
-            this.typeDataGridViewTextBoxColumn.HeaderText = "Type";
-            this.typeDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.typeDataGridViewTextBoxColumn.Name = "typeDataGridViewTextBoxColumn";
-            this.typeDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.typeDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // cardTextDataGridViewTextBoxColumn
-            // 
-            this.cardTextDataGridViewTextBoxColumn.DataPropertyName = "Card_Text";
-            this.cardTextDataGridViewTextBoxColumn.HeaderText = "Card_Text";
-            this.cardTextDataGridViewTextBoxColumn.MinimumWidth = 24;
-            this.cardTextDataGridViewTextBoxColumn.Name = "cardTextDataGridViewTextBoxColumn";
-            this.cardTextDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.cardTextDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // cardBindingSource
-            // 
-            this.cardBindingSource.DataSource = typeof(CardHub.Classes.Card);
-            // 
-            // viewPackBtn
-            // 
-            this.viewPackBtn.Enabled = false;
-            this.viewPackBtn.Location = new System.Drawing.Point(419, 67);
-            this.viewPackBtn.Name = "viewPackBtn";
-            this.viewPackBtn.Size = new System.Drawing.Size(132, 40);
-            this.viewPackBtn.TabIndex = 2;
-            this.viewPackBtn.Text = "View Pack";
-            this.viewPackBtn.UseVisualStyleBackColor = true;
-            this.viewPackBtn.Click += new System.EventHandler(this.viewPackBtn_Click);
             // 
             // label1
             // 
@@ -257,9 +160,94 @@
             this.toolStripProgressBar1.Step = 1;
             this.toolStripProgressBar1.ToolTipText = "HTML Retrieval Progress";
             // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            this.nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            this.nameDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            this.nameDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.nameDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // levelDataGridViewTextBoxColumn
+            // 
+            this.levelDataGridViewTextBoxColumn.DataPropertyName = "Level";
+            this.levelDataGridViewTextBoxColumn.HeaderText = "Level";
+            this.levelDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.levelDataGridViewTextBoxColumn.Name = "levelDataGridViewTextBoxColumn";
+            this.levelDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.levelDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // attributeDataGridViewTextBoxColumn
+            // 
+            this.attributeDataGridViewTextBoxColumn.DataPropertyName = "Attribute";
+            this.attributeDataGridViewTextBoxColumn.HeaderText = "Attribute";
+            this.attributeDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.attributeDataGridViewTextBoxColumn.Name = "attributeDataGridViewTextBoxColumn";
+            this.attributeDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.attributeDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // attackDataGridViewTextBoxColumn
+            // 
+            this.attackDataGridViewTextBoxColumn.DataPropertyName = "Attack";
+            this.attackDataGridViewTextBoxColumn.HeaderText = "Attack";
+            this.attackDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.attackDataGridViewTextBoxColumn.Name = "attackDataGridViewTextBoxColumn";
+            this.attackDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.attackDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // defenseDataGridViewTextBoxColumn
+            // 
+            this.defenseDataGridViewTextBoxColumn.DataPropertyName = "Defense";
+            this.defenseDataGridViewTextBoxColumn.HeaderText = "Defense";
+            this.defenseDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.defenseDataGridViewTextBoxColumn.Name = "defenseDataGridViewTextBoxColumn";
+            this.defenseDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.defenseDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // typeDataGridViewTextBoxColumn
+            // 
+            this.typeDataGridViewTextBoxColumn.DataPropertyName = "Type";
+            this.typeDataGridViewTextBoxColumn.HeaderText = "Type";
+            this.typeDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.typeDataGridViewTextBoxColumn.Name = "typeDataGridViewTextBoxColumn";
+            this.typeDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.typeDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // cardTextDataGridViewTextBoxColumn
+            // 
+            this.cardTextDataGridViewTextBoxColumn.DataPropertyName = "Card_Text";
+            this.cardTextDataGridViewTextBoxColumn.HeaderText = "Card_Text";
+            this.cardTextDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.cardTextDataGridViewTextBoxColumn.Name = "cardTextDataGridViewTextBoxColumn";
+            this.cardTextDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.cardTextDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // linkDataGridViewTextBoxColumn
+            // 
+            this.linkDataGridViewTextBoxColumn.DataPropertyName = "Link";
+            this.linkDataGridViewTextBoxColumn.HeaderText = "Link";
+            this.linkDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.linkDataGridViewTextBoxColumn.Name = "linkDataGridViewTextBoxColumn";
+            this.linkDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.linkDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // rankDataGridViewTextBoxColumn
+            // 
+            this.rankDataGridViewTextBoxColumn.DataPropertyName = "Rank";
+            this.rankDataGridViewTextBoxColumn.HeaderText = "Rank";
+            this.rankDataGridViewTextBoxColumn.MinimumWidth = 24;
+            this.rankDataGridViewTextBoxColumn.Name = "rankDataGridViewTextBoxColumn";
+            this.rankDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.rankDataGridViewTextBoxColumn.Width = 150;
+            // 
             // cardBindingSource1
             // 
             this.cardBindingSource1.DataSource = typeof(CardHub.Classes.Card);
+            // 
+            // cardBindingSource
+            // 
+            this.cardBindingSource.DataSource = typeof(CardHub.Classes.Card);
             // 
             // formMainHub
             // 
@@ -275,10 +263,10 @@
             this.packSelectGroupBox.PerformLayout();
             this.advancedDgvPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.advancedDataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -289,22 +277,21 @@
         private System.Windows.Forms.GroupBox packSelectGroupBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox boosterPackSelect;
-        private System.Windows.Forms.Button viewPackBtn;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Panel advancedDgvPanel;
         private Zuby.ADGV.AdvancedDataGridView advancedDataGridView1;
+        private System.Windows.Forms.BindingSource cardBindingSource;
+        private System.Windows.Forms.BindingSource cardBindingSource1;
         private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn attributeDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn linkDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn rankDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn levelDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn attributeDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn attackDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn defenseDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn typeDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn cardTextDataGridViewTextBoxColumn;
-        private System.Windows.Forms.BindingSource cardBindingSource;
-        private System.Windows.Forms.BindingSource cardBindingSource1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn linkDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn rankDataGridViewTextBoxColumn;
     }
 }
