@@ -1,4 +1,5 @@
 ﻿using CardHub.Classes;
+using CardHub.CustomConrtols;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -29,6 +31,9 @@ namespace CardHub.Forms
         public Dictionary<string, string> _boosterPackNameUrlDict;
         public Dictionary<string, List<string>> _boosterPackNameWithCards;
 
+        // This will populate  every time the data set displayed on the DataGridView changes
+        private List<Card> _currentlyAppliedGridViewData;
+
         public string SelectedBoosterPack
         {
             get { return _selectedBoosterPack; }
@@ -45,12 +50,90 @@ namespace CardHub.Forms
 
         }
 
+        private FilterControl _filterControl;
+        private Form _floatingFilterForm;
+
+
         #endregion
 
         public formMainHub()
         {
             InitializeComponent();
+            _filterControl = new FilterControl();
+            _filterControl.ApplyFilterClicked += OnApplyFilterClicked;
         }
+
+        private void OnApplyFilterClicked(object sender, EventArgs e)
+        {
+            // Set the filter criteria from values on the FilterControl
+            var field = _filterControl.FieldComboBox.Text;
+            var op = _filterControl.OperatorComboBox.Text;
+            var val = _filterControl.ValueTextBox.Text;
+
+            // Apply the filter to our DGV data source
+            ApplyCardFilter(field, op, val);
+        }
+        
+        /// <summary>
+        /// Take the filter criteria entered by the user and apply it to the data set currently
+        /// set as the DataSource to the Grid  View. Then set the filtered data to be the DataSource
+        /// for the Grid View
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="op"></param>
+        /// <param name="vlu"></param>
+        private void ApplyCardFilter(string field, string op, string vlu)
+        {
+            var prop = typeof(Card).GetProperty(field);
+            if (prop == null) return;
+
+            var filtered = _currentlyAppliedGridViewData.Where(card =>
+            {
+                var value = prop.GetValue(card);
+                if (value == null) return false;
+
+                var stringValue = value.ToString();
+
+                return op switch
+                {
+                    "=" => stringValue == vlu,
+                    ">" => double.TryParse(stringValue, out var val1) && double.TryParse(vlu, out var val2) && val1 > val2,
+                    "<" => double.TryParse(stringValue, out var val3) && double.TryParse(vlu, out var val4) && val3 < val4,
+                    ">=" => double.TryParse(stringValue, out var val5) && double.TryParse(vlu, out var val6) && val5 >= val6,
+                    "<=" => double.TryParse(stringValue, out var val7) && double.TryParse(vlu, out var val8) && val7 <= val8,
+                    "Contains" => stringValue != null && stringValue.IndexOf(vlu, StringComparison.OrdinalIgnoreCase) >= 0,
+                    _ => false
+                };
+            }).ToList();
+
+            // Apply to grid
+            advancedDataGridView1.DataSource = filtered;
+            advancedDataGridView1.Refresh();
+
+        }
+
+        //private void ApplyCardFilter(string field, string op, string vlu)
+        //{
+        //    switch (field)
+        //    {
+        //        case "Level":
+        //            var newData = _currentlyAppliedGridViewData.Where(i => i.Level == vlu).ToList();
+        //            break;
+        //        case "Attribtue":
+
+        //            break;
+        //        case "ATK":
+
+        //            break;
+        //        case "Card Name":
+
+        //            break;
+
+        //        default:
+        //            break;
+        //    }
+
+        //}
 
         /// <summary>
         /// Handles the load event for the main hub form.
@@ -160,6 +243,7 @@ namespace CardHub.Forms
                         // List<T> is NOT capable of being sorted by the Grid, DataTable IS.
                         var table = ToDataTable(cardList);
                         bindingSource.DataSource = table;
+                        _currentlyAppliedGridViewData = cardList;
                         advancedDataGridView1.DataSource = bindingSource;
                     }
                 }
@@ -240,6 +324,93 @@ namespace CardHub.Forms
             SelectedBoosterPack = null;
             UpdatedProgressBarValue = 0;
             Application.Exit();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void advancedFilteringToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_floatingFilterForm == null || _floatingFilterForm.IsDisposed)
+            {
+                // Create and show a form that will hold the FilterControl
+                _floatingFilterForm = new Form
+                {
+                    FormBorderStyle = FormBorderStyle.FixedToolWindow,
+                    StartPosition = FormStartPosition.CenterParent,
+                    Size = new Size(300, 250),
+                    Text = "Filter Options",
+                    TopMost = true // Optional: keeps it above other windows
+                };
+
+                _filterControl.Dock = DockStyle.Fill;
+
+                _floatingFilterForm.Controls.Add(_filterControl);
+                _floatingFilterForm.Show();
+            }
+            else
+            {
+                _floatingFilterForm.BringToFront();
+                _floatingFilterForm.Activate();
+            }
+        }
+
+        /// <summary>
+        /// When user selects item from the right click contect meni=u
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void openFilterControlContextMenu_Click(object sender, EventArgs e)
+        {
+            if (_floatingFilterForm == null || _floatingFilterForm.IsDisposed)
+            {
+                // Create and show a form that will hold the FilterControl
+                _floatingFilterForm = new Form
+                {
+                    FormBorderStyle = FormBorderStyle.FixedToolWindow,
+                    StartPosition = FormStartPosition.CenterParent,
+                    Size = new Size(300, 250),
+                    Text = "Filter Options",
+                    TopMost = true // Optional: keeps it above other windows
+                };
+
+                _filterControl.Dock = DockStyle.Fill;
+
+                _floatingFilterForm.Controls.Add(_filterControl);
+                _floatingFilterForm.Show();
+            }
+            else
+            {
+                _floatingFilterForm.BringToFront();
+                _floatingFilterForm.Activate();
+            }
+        }
+
+        /// <summary>
+        /// When right mouse button is clicked, show the user a contect menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void advancedDataGridView1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hitTest = advancedDataGridView1.HitTest(e.X, e.Y);
+                if (hitTest.RowIndex >= 0)
+                {
+                    advancedDataGridView1.ClearSelection();
+                    advancedDataGridView1.Rows[hitTest.RowIndex].Selected = true;
+
+                    // Stoer the DGV cell that the right click was performed on. This can
+                    // be used in a way where we use that cells value as filter value.
+                    advancedDataGridView1.CurrentCell = advancedDataGridView1.Rows[hitTest.RowIndex].Cells[hitTest.ColumnIndex];
+
+                    // Show the context menu
+                    filterContextMenu.Show(advancedDataGridView1, e.Location);
+                }
+            }
         }
     }
 }

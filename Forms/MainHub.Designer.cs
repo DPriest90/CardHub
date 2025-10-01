@@ -37,6 +37,13 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitApplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.advancedFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filterContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openFilterControlContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.levelDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.attributeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,16 +55,14 @@
             this.rankDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cardBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.cardBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitApplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packSelectGroupBox.SuspendLayout();
             this.advancedDgvPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.advancedDataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            this.filterContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).BeginInit();
-            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // packSelectGroupBox
@@ -118,6 +123,7 @@
             this.advancedDataGridView1.Size = new System.Drawing.Size(989, 390);
             this.advancedDataGridView1.SortStringChangedInvokeBeforeDatasourceUpdate = true;
             this.advancedDataGridView1.TabIndex = 0;
+            this.advancedDataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.advancedDataGridView1_MouseUp);
             // 
             // label1
             // 
@@ -163,6 +169,64 @@
             this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 24);
             this.toolStripProgressBar1.Step = 1;
             this.toolStripProgressBar1.ToolTipText = "HTML Retrieval Progress";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.dataGridToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1159, 33);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitApplicationToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // exitApplicationToolStripMenuItem
+            // 
+            this.exitApplicationToolStripMenuItem.Name = "exitApplicationToolStripMenuItem";
+            this.exitApplicationToolStripMenuItem.Size = new System.Drawing.Size(236, 34);
+            this.exitApplicationToolStripMenuItem.Text = "E&xit Application";
+            this.exitApplicationToolStripMenuItem.Click += new System.EventHandler(this.exitApplicationToolStripMenuItem_Click);
+            // 
+            // dataGridToolStripMenuItem
+            // 
+            this.dataGridToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.advancedFilteringToolStripMenuItem});
+            this.dataGridToolStripMenuItem.Name = "dataGridToolStripMenuItem";
+            this.dataGridToolStripMenuItem.Size = new System.Drawing.Size(103, 29);
+            this.dataGridToolStripMenuItem.Text = "&Data Grid";
+            // 
+            // advancedFilteringToolStripMenuItem
+            // 
+            this.advancedFilteringToolStripMenuItem.Name = "advancedFilteringToolStripMenuItem";
+            this.advancedFilteringToolStripMenuItem.Size = new System.Drawing.Size(261, 34);
+            this.advancedFilteringToolStripMenuItem.Text = "Advanced Filterin&g";
+            this.advancedFilteringToolStripMenuItem.Click += new System.EventHandler(this.advancedFilteringToolStripMenuItem_Click);
+            // 
+            // filterContextMenu
+            // 
+            this.filterContextMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.filterContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openFilterControlContextMenu});
+            this.filterContextMenu.Name = "contextMenuStrip1";
+            this.filterContextMenu.Size = new System.Drawing.Size(232, 36);
+            // 
+            // openFilterControlContextMenu
+            // 
+            this.openFilterControlContextMenu.Name = "openFilterControlContextMenu";
+            this.openFilterControlContextMenu.Size = new System.Drawing.Size(240, 32);
+            this.openFilterControlContextMenu.Text = "Advanced Filtering";
+            this.openFilterControlContextMenu.Click += new System.EventHandler(this.openFilterControlContextMenu_Click);
             // 
             // nameDataGridViewTextBoxColumn
             // 
@@ -271,33 +335,6 @@
             // 
             this.cardBindingSource.DataSource = typeof(CardHub.Classes.Card);
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1159, 33);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitApplicationToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
-            this.fileToolStripMenuItem.Text = "&File";
-            // 
-            // exitApplicationToolStripMenuItem
-            // 
-            this.exitApplicationToolStripMenuItem.Name = "exitApplicationToolStripMenuItem";
-            this.exitApplicationToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.exitApplicationToolStripMenuItem.Text = "E&xit Application";
-            this.exitApplicationToolStripMenuItem.Click += new System.EventHandler(this.exitApplicationToolStripMenuItem_Click);
-            // 
             // formMainHub
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -315,10 +352,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.advancedDataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.filterContextMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cardBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -348,5 +386,9 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitApplicationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dataGridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem advancedFilteringToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip filterContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem openFilterControlContextMenu;
     }
 }

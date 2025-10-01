@@ -81,91 +81,99 @@ namespace CardHub.Classes
         /// empty.</returns>
         public static async Task<string> GetHtml()
         {
-            string html = await CallUrl(_url);
-
-            List<string> inputTags = GetBoosterPackInputTags(html);
-            Dictionary<string, int> packNameTracker = new Dictionary<string, int>();
-            int pbTracker = 0;
-
-            _mainFormProgressBar.Maximum = inputTags?.Count ?? 0;
-
-            if (inputTags != null && inputTags.Count > 0)
+            try
             {
-                string packNameElementClass = "broad_title";
+                string html = await CallUrl(_url);
 
-                foreach (string line in inputTags)
+                List<string> inputTags = GetBoosterPackInputTags(html);
+                Dictionary<string, int> packNameTracker = new Dictionary<string, int>();
+                int pbTracker = 0;
+
+                _mainFormProgressBar.Maximum = inputTags?.Count ?? 0;
+
+                if (inputTags != null && inputTags.Count > 0)
                 {
-                    pbTracker++;
-                    _mainFormProgressBar.Value = pbTracker;
+                    string packNameElementClass = "broad_title";
 
-                    string fullPackLink = _baseUrl + line.Substring(48, line.Length - 50);
-                    string packHtml = await CallUrl(fullPackLink);
-
-                    var packHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-                    packHtmlDoc.LoadHtml(packHtml);
-
-                    var pageTitleContainer = packHtmlDoc.DocumentNode.SelectSingleNode("//title");
-                    string completePageTitle = pageTitleContainer?.InnerHtml ?? "UnknownPack";
-                    string rawPackName = completePageTitle.Split('|')[0].Trim();
-                    string packName = rawPackName.Replace(" ", "");
-
-                    // Track appearances of each pack name
-                    if (packNameTracker.ContainsKey(packName))
+                    foreach (string line in inputTags)
                     {
-                        packNameTracker[packName]++;
-                        packName += "_" + packNameTracker[packName];
+                        pbTracker++;
+                        _mainFormProgressBar.Value = pbTracker;
+
+                        string fullPackLink = _baseUrl + line.Substring(48, line.Length - 50);
+                        string packHtml = await CallUrl(fullPackLink);
+
+                        var packHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+                        packHtmlDoc.LoadHtml(packHtml);
+
+                        var pageTitleContainer = packHtmlDoc.DocumentNode.SelectSingleNode("//title");
+                        string completePageTitle = pageTitleContainer?.InnerHtml ?? "UnknownPack";
+                        string rawPackName = completePageTitle.Split('|')[0].Trim();
+                        string packName = rawPackName.Replace(" ", "");
+
+                        // Track appearances of each pack name
+                        if (packNameTracker.ContainsKey(packName))
+                        {
+                            packNameTracker[packName]++;
+                            packName += "_" + packNameTracker[packName];
+                        }
+                        else
+                        {
+                            packNameTracker[packName] = 1;
+                        }
+
+                        _boosterPackWebPageUrlDict[packName] = fullPackLink;
+                        _boosterPackNames.Add(packName);
+
+                        #region Class text values for the information we need to retrieve from HTML elements
+                        string cardContainerClassName = "t_row c_normal";
+                        string cardImageContainerClassName = "box_card_img";
+                        string cardInfoParentContainer = "flex_1";
+                        string cardNameContainer = "card_name";
+                        string cardTitleClassName = "cnm";
+                        #endregion
+
+                        // This gets all cards in the booster pack
+                        var cardsInBoosterPack = packHtmlDoc.DocumentNode.Descendants("div")
+                            .Where(node => node.GetAttributeValue("class", "").Contains(cardContainerClassName))
+                            .ToList();
+
+                        // This get us the raw HTML for each card i the booster pack
+                        var cardsHtmlList = cardsInBoosterPack
+                            .Select(node => node.InnerHtml)
+                            .ToList();
+
+                        // Here we populate a List of Card objects with what data we can get
+                        // from the raw HTML and that to a Dict<string, List<Card>> object.
+                        // This way we can display every card in a certain booster pack
+                        // to the user on request
+                        List<Card> packCards = ParseCardsFromHtml(cardsHtmlList);
+                        _boosterPackAndCardsDict.Add(packName, packCards);
+
+                        _boosterPackWithCardNamesDictionary.Add(packName, cardsHtmlList);
                     }
-                    else
-                    {
-                        packNameTracker[packName] = 1;
-                    }
 
-                    _boosterPackWebPageUrlDict[packName] = fullPackLink;
-                    _boosterPackNames.Add(packName);
+                    // Present data to the form
+                    _mainForm._boosterPackNameUrlDict = _boosterPackWebPageUrlDict;
+                    _mainForm._boosterPackNameWithCards = _boosterPackWithCardNamesDictionary;
 
-                    #region Class text values for the information we need to retrieve from HTML elements
-                    string cardContainerClassName = "t_row c_normal";
-                    string cardImageContainerClassName = "box_card_img";
-                    string cardInfoParentContainer = "flex_1";
-                    string cardNameContainer = "card_name";
-                    string cardTitleClassName = "cnm";
-                    #endregion
+                    // Write our booster pack name + URL Dictionary object to JSON file.
+                    string urlCacheFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PackNameUrlMap.json");
+                    string json = JsonConvert.SerializeObject(_boosterPackWebPageUrlDict, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText(urlCacheFilePath, json);
 
-                    // This gets all cards in the booster pack
-                    var cardsInBoosterPack = packHtmlDoc.DocumentNode.Descendants("div")
-                        .Where(node => node.GetAttributeValue("class", "").Contains(cardContainerClassName))
-                        .ToList();
+                    // Write our JSON data file that uses a serialized object <Dictionary<string, List<Card>>
+                    string boosterPackCards = JsonConvert.SerializeObject(_boosterPackAndCardsDict);
+                    File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _boosterPackCardDataJsonFile), boosterPackCards);
 
-                    // This get us the raw HTML for each card i the booster pack
-                    var cardsHtmlList = cardsInBoosterPack
-                        .Select(node => node.InnerHtml)
-                        .ToList();
-
-                    // Here we populate a List of Card objects with what data we can get
-                    // from the raw HTML and that to a Dict<string, List<Card>> object.
-                    // This way we can display every card in a certain booster pack
-                    // to the user on request
-                    List<Card> packCards = ParseCardsFromHtml(cardsHtmlList);
-                    _boosterPackAndCardsDict.Add(packName, packCards);
-
-                    _boosterPackWithCardNamesDictionary.Add(packName, cardsHtmlList);
                 }
 
-                _mainForm._boosterPackNameUrlDict = _boosterPackWebPageUrlDict;
-                _mainForm._boosterPackNameWithCards = _boosterPackWithCardNamesDictionary;
-
-                // Write our booster pack name + URL Dictionary object to JSON file.
-                string urlCacheFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PackNameUrlMap.json");
-                string json = JsonConvert.SerializeObject(_boosterPackWebPageUrlDict, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(urlCacheFilePath, json);
-
-                // Write our JSON data file that uses a serialized object <Dictionary<string, List<Card>>
-                string boosterPackCards = JsonConvert.SerializeObject(_boosterPackAndCardsDict);
-                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _boosterPackCardDataJsonFile), boosterPackCards);
-
+                return "";
             }
-
-            return "";
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -265,6 +273,12 @@ namespace CardHub.Classes
             return packNames;
         }
 
+        /// <summary>
+        /// Uses HttpClient to retrieve all Html content within the pages <body> tag and return
+        /// as a string. Function is asynchronous.
+        /// </summary>
+        /// <param name="fullUrl"></param>
+        /// <returns></returns>
         private static async Task<string> CallUrl(string fullUrl)
         {
             try
@@ -277,27 +291,6 @@ namespace CardHub.Classes
             {
                 return ex.Message;
             }
-
-            //try
-            //{
-            //    // Create an HttpClient object to retrieve the HTML of given URL
-            //    using (HttpClient client = new HttpClient())
-            //    {
-            //        //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
-            //        client.DefaultRequestHeaders.Accept.Clear();
-
-            //        // Get the contents of our pages <body> tag
-            //        var response = client.GetStringAsync(fullUrl);
-
-            //        // return the data
-            //        return await response;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return ex.Message;
-            //}
-
         }
 
         private static List<string> GetBoosterPackInputTags(string html)
@@ -344,53 +337,6 @@ namespace CardHub.Classes
                 return null;
             }
 
-        }
-
-        /// <summary>
-        /// Get data for the 
-        /// </summary>        
-        /// <param name="cardsInBoosterPack"></param>
-        private static void ProcessBoosterPack(List<HtmlNode> cardsInBoosterPack)
-        {
-            // Iterate through all cards in current pack
-            foreach (HtmlNode node in cardsInBoosterPack)
-            {
-                Card currentCard = new Card();
-
-                // Get the complete HTML from current HtmlNode. This will contain all the html related to the current card
-                string currentCardHtml = node.OuterHtml;
-                //var cardNamePart = cardInfoParentContainer
-
-                // Create HtmlDoc that ONLY contains the current card html
-                HtmlAgilityPack.HtmlDocument cardDoc = new HtmlAgilityPack.HtmlDocument();
-                cardDoc.LoadHtml(currentCardHtml);
-
-                #region Card properties
-
-                // Isolate the <span> tag that holds the card name text
-                var crdNameTag = cardDoc.DocumentNode.Descendants("span")
-                   .Where(n1 => n1.GetAttributeValue("class", "").Contains("card_name"))
-                   .ToList();
-
-                // Get the card name from the above HtmlNode
-                string cardName = crdNameTag[0].InnerText.Trim();
-
-                // Isolate the attribute value of current card
-                // i.e. DARK, LIGHT, WATER, FIRE, EARTH etc.
-                var attributeTag = cardDoc.DocumentNode.Descendants("span")
-                    .Where(n2 => n2.GetAttributeValue("class", "")
-                    .Contains("box_card_attribute"))
-                    .ToList();
-
-                // First entry of this collection should always be the attribute of the card
-                string crdAttribute = attributeTag[0].InnerText.Trim();
-
-                #endregion
-
-                // Here is where we set the properties of the current card object
-                currentCard.Name = cardName;
-                currentCard.Attribute = crdAttribute;
-            }
         }
     
         private static List<string> ImportCardImageUrlList()

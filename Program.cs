@@ -16,8 +16,8 @@ namespace CardHub
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Forms.userControlTestForm());
             Application.Run(new Forms.formMainHub());
-            //Application.Run(new Forms.DeckBuilderScreen());
         }
     }
 }
